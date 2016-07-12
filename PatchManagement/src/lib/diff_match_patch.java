@@ -1809,6 +1809,28 @@ public class diff_match_patch {
   }
 
   /**
+   * Given an array of patches, return another array that is identical.
+   * @param patches Array of Patch objects.
+   * @return Array of Patch objects.
+   */
+  public LinkedList<Patch> patch_deepCopy(LinkedList<Patch> patches) {
+    LinkedList<Patch> patchesCopy = new LinkedList<Patch>();
+    for (Patch aPatch : patches) {
+      Patch patchCopy = new Patch();
+      for (Diff aDiff : aPatch.diffs) {
+        Diff diffCopy = new Diff(aDiff.operation, aDiff.text);
+        patchCopy.diffs.add(diffCopy);
+      }
+      patchCopy.start1 = aPatch.start1;
+      patchCopy.start2 = aPatch.start2;
+      patchCopy.length1 = aPatch.length1;
+      patchCopy.length2 = aPatch.length2;
+      patchesCopy.add(patchCopy);
+    }
+    return patchesCopy;
+  }
+
+/**
    * Compute a list of patches to turn text1 into text2.
    * text2 is not provided, diffs are the delta between text1 and text2.
    * @param text1 Old text.
@@ -1893,28 +1915,6 @@ public class diff_match_patch {
     }
 
     return patches;
-  }
-
-  /**
-   * Given an array of patches, return another array that is identical.
-   * @param patches Array of Patch objects.
-   * @return Array of Patch objects.
-   */
-  public LinkedList<Patch> patch_deepCopy(LinkedList<Patch> patches) {
-    LinkedList<Patch> patchesCopy = new LinkedList<Patch>();
-    for (Patch aPatch : patches) {
-      Patch patchCopy = new Patch();
-      for (Diff aDiff : aPatch.diffs) {
-        Diff diffCopy = new Diff(aDiff.operation, aDiff.text);
-        patchCopy.diffs.add(diffCopy);
-      }
-      patchCopy.start1 = aPatch.start1;
-      patchCopy.start2 = aPatch.start2;
-      patchCopy.length1 = aPatch.length1;
-      patchCopy.length2 = aPatch.length2;
-      patchesCopy.add(patchCopy);
-    }
-    return patchesCopy;
   }
 
   /**

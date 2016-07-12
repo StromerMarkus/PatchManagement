@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -35,7 +34,7 @@ public class PatchGenerator implements IHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if(Connector.backup == null) {
+		if(Connector.BACKUP == null) {
 			System.out.println("no solution found");
 		} else {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -107,19 +106,5 @@ public class PatchGenerator implements IHandler {
 		}
 	}
 	
-	private class DirectoryFileFilter extends FileFilter {
 
-		@Override
-		public boolean accept(File f) {
-
-			return f.isDirectory();
-		}
-
-		@Override
-		public String getDescription() {
-
-			return ("accept directorys");
-		}
-		
-	}
 }
