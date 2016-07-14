@@ -131,7 +131,7 @@ public abstract class Connector {
 			writer.close();
 		} else {
 			output.delete();
-			System.out.println("no difference");
+			System.out.println(diffed.getName() + ": no difference");
 		}
 		
 	}
