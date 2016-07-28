@@ -1,4 +1,4 @@
-package patchmanagement.handler;
+package edu.hm.stromer.bachelorthesis.patchmanagement.handler;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -15,22 +17,41 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import patchmanagement.Connector;
+import edu.hm.stromer.bachelorthesis.patchmanagement.Activator;
+import edu.hm.stromer.bachelorthesis.patchmanagement.Connector;
 
+/**
+ * This handler generate mutants to the eclipse workspace choosing specific patch-files
+ * 
+ * @author Markus Stromer
+ *
+ */
 public class Patcher implements IHandler {
 
+	private Activator activator = Activator.getDefault();
+	private Connector connector = activator.getConnector();
+	
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * Patches selected files to the eclipse workspace and create mutants
+	 * 
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -54,8 +75,13 @@ public class Patcher implements IHandler {
 				File patchDir = new File(directoryName);
 
 				try {
-					Connector.applyPatches(patchDir, src);
-				} catch (IllegalArgumentException | IOException e) {
+					if(connector.getBackup() != null) {
+						connector.applyPatches(patchDir, src);
+						project.refreshLocal(IResource.DEPTH_INFINITE,null);
+					} else {
+						activator.writeErrorLog("no backup found");
+					}
+				} catch (IllegalArgumentException | IOException | CoreException e) {
 					e.printStackTrace();
 				}
 
@@ -64,21 +90,30 @@ public class Patcher implements IHandler {
 		return null;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public boolean isHandled() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
+
 
 	}
 

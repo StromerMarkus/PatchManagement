@@ -1,4 +1,4 @@
-package patchmanagement.handler;
+package edu.hm.stromer.bachelorthesis.patchmanagement.handler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,26 +16,50 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import patchmanagement.Connector;
+import edu.hm.stromer.bachelorthesis.patchmanagement.Activator;
+import edu.hm.stromer.bachelorthesis.patchmanagement.Connector;
 
+/**
+ * This handler generates patch-files of changes between backup solution and eclipse workspace
+ * 
+ * @author Markus Stromer
+ *
+ */
 public class PatchGenerator implements IHandler {
 
+	private Activator activator = Activator.getDefault();
+	private Connector connector = activator.getConnector();
+	
+	/**
+	 *@see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
+
 
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+
 
 	}
 
+	/**
+	 * Generates patch-files of changed solution.
+	 * 
+	 * After applied changes, differences found will be written into patch-files and stored to specific location
+	 * 
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if(Connector.BACKUP == null) {
-			System.out.println("no solution found");
+		if(connector.getBackup() == null) {
+			
+			activator.writeErrorLog("No solution found");
 		} else {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			if (window != null)
@@ -57,7 +81,7 @@ public class PatchGenerator implements IHandler {
 					File patchDirectory = new File(directoryName);
 					try {
 						createPatches(projectFile, patchDirectory);
-						Connector.restore();
+						connector.restore();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -68,24 +92,41 @@ public class PatchGenerator implements IHandler {
 		return null;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public boolean isHandled() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
+
 
 	}
 
+	/**
+	 * Search all java source files and check for pending changes. If differences found generate patch-file
+	 * 
+	 * @param projectFile directory of project
+	 * @param patchDir directory of stored patch-files
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	private void createPatches(File projectFile, File patchDir) throws FileNotFoundException, IOException {
 		if(projectFile.isDirectory()) {
 			File[] files = projectFile.listFiles();
@@ -96,7 +137,7 @@ public class PatchGenerator implements IHandler {
 			if(projectFile.getName().endsWith(".java")) {
 				String patchName = projectFile.getName().replace(".java", ".diff");
 				File patchFile = new File(patchDir, patchName);
-				Connector.writePatch(projectFile, patchFile);
+				connector.writePatch(projectFile, patchFile);
 			}
 		}
 	}

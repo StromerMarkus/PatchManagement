@@ -1,9 +1,6 @@
-package patchmanagement.handler;
+package edu.hm.stromer.bachelorthesis.patchmanagement.handler;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,30 +12,57 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import patchmanagement.Connector;
+import edu.hm.stromer.bachelorthesis.patchmanagement.Activator;
+import edu.hm.stromer.bachelorthesis.patchmanagement.Connector;
 
+/**
+ * This handler is used to backup solution in eclipse workspace to filesystem
+ * 
+ * @author Markus Stromer
+ *
+ */
 public class BackupHandler implements IHandler {
 	
-
+	private Activator activator = Activator.getDefault();
+	private Connector connector = activator.getConnector();
+	
+	
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
+
 
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+
 
 	}
 
+	/**
+	 * Execution command of this handler
+	 * 
+	 * Creates a new temp directory and copy marked project to that location
+	 * 
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+	
+		
 		
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IViewSite site = (IViewSite) window.getActivePage().getActivePart().getSite();
 	    if (window != null)
 	    {
 	        IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
@@ -46,19 +70,19 @@ public class BackupHandler implements IHandler {
 	        if (firstElement instanceof IAdaptable)
 	        {
 	            IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
-	     
+
 	            String path = project.getLocation().toOSString();
-	            System.out.println(path);
 	            File src = new File(path);
 
 	            try {
 					Path backup = Files.createTempDirectory(project.getName());
-					Connector.BACKUP = backup.toFile();
-					System.out.println(backup);
-					copyDirectory(src, Connector.BACKUP);
+					connector.setBackup(backup.toFile());
+					connector.copyDirectory(src, connector.getBackup());
+					site.getActionBars().getStatusLineManager().setMessage("Backup successful: " + connector.getBackup().getAbsolutePath());
+
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					activator.writeErrorLog(e.getMessage(), e);
 				}
 
 	        }
@@ -67,48 +91,31 @@ public class BackupHandler implements IHandler {
 		return null;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public boolean isHandled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
+	/**
+	 * @see org.eclipse.core.commands.IHandler
+	 */
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
 
 	}
 	
 
-	private void copyDirectory(File source, File destination) throws FileNotFoundException, IOException {
-		
-		if(source.isDirectory()) {
-			if(!destination.isDirectory()) {
-				destination.mkdir();
-			}
-			File[] files = source.listFiles();
-			for(File file: files)  {
-				File dest = new File(destination, file.getName());
-				copyDirectory(file,dest);
-			}
-		} else {
-			try(FileInputStream fin = new FileInputStream(source); 
-				FileOutputStream fout = new FileOutputStream(destination)) {
-				
-				byte[] buffer = new byte[(int) source.length()];
-				fin.read(buffer);
-				fout.write(buffer);
-				fout.flush();
-				
-			}
-		}
-		
-	}
+
 
 }

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package lib;
+package edu.hm.stromer.bachelorthesis.lib;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

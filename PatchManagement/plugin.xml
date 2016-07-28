@@ -17,7 +17,7 @@
             locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
          <command
                commandId="edu.hm.stromer.patchmanagement.createDiff"
-               label="Create Patch"
+               label="Create Patches"
                style="push">
          </command>
       </menuContribution>
@@ -34,17 +34,17 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="patchmanagement.handler.BackupHandler"
+            defaultHandler="edu.hm.stromer.bachelorthesis.patchmanagement.handler.BackupHandler"
             id="edu.hm.stromer.patchManagement.backup"
             name="BackupCommand">
       </command>
       <command
-            defaultHandler="patchmanagement.handler.PatchGenerator"
+            defaultHandler="edu.hm.stromer.bachelorthesis.patchmanagement.handler.PatchGenerator"
             id="edu.hm.stromer.patchmanagement.createDiff"
             name="CreateDiff">
       </command>
       <command
-            defaultHandler="patchmanagement.handler.Patcher"
+            defaultHandler="edu.hm.stromer.bachelorthesis.patchmanagement.handler.Patcher"
             id="edu.hm.stromer.patchManagement.applyPatch"
             name="ApplyPatch">
       </command>
